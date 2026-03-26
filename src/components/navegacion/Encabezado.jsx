@@ -4,6 +4,7 @@ import { Button, Container, Nav, Navbar, Offcanvas } from "react-bootstrap";
 import logo from "../../assets/logo.png";
 import { supabase } from "../../database/supabaseconfig";
 
+
 const Encabezado = () => {
 
   const [mostrarMenu, setMostrarMenu] = useState(false);
