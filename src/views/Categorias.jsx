@@ -4,6 +4,7 @@ import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import ModalRegistroCategoria from "../components/categorias/ModalRegistroCategoria";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import TablaCategorias from "../components/categorias/TablaCategorias";
+import TarjetaCategoria from "../components/categorias/TarjetaCategoria";
 
 const Categorias = () => {
   const [toast, setToast] = useState({ mostrar: false, mensaje: "", tipo: "" });
@@ -181,6 +182,17 @@ const Categorias = () => {
           </Col>
         </Row>
       )}
+
+      {/* Implementación de las tarjetas */}
+
+      <Col xs={12} sm={12} md={12} className="d-lg-none">
+        <TarjetaCategoria
+          categorias={categorias}
+          abrirModalEdicion={abrirModalEdicion}
+          abrirModalEliminacion={abrirModalEliminacion}
+          />
+      </Col>
+
 
       {/* Modal de Registro */}
       <ModalRegistroCategoria
