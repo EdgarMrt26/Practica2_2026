@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../database/supabaseconfig";
-import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Button, Spinner, Alert } from "react-bootstrap";
 import ModalRegistroCategoria from "../components/categorias/ModalRegistroCategoria";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import TablaCategorias from "../components/categorias/TablaCategorias";
 import TarjetaCategoria from "../components/categorias/TarjetaCategoria";
 import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
 import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
+import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
+import Paginacion from "../components/ordenamiento/Paginacion";
 
 const Categorias = () => {
   const [toast, setToast] = useState({ mostrar: false, mensaje: "", tipo: "" });
@@ -234,6 +236,40 @@ const Categorias = () => {
     }
   };
 
+  // Variables de estado de Cuadro Búsqueda:
+  const [textoBusqueda, setTextoBusqueda] = useState("");
+  const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
+
+  //Cambio de estado----CuadroBusqueda:
+  const manejarBusqueda = (e) => {
+    setTextoBusqueda(e.target.value);
+  }
+
+  //Método para carga inicial de categorías filtradas:
+  useEffect(() => {
+    if (!textoBusqueda.trim()) {
+      setCategoriasFiltradas(categorias);
+    } else {
+      const textoLower = textoBusqueda.toLowerCase().trim();
+      const filtradas = categorias.filter(
+        (cat) =>
+          cat.nombre_categoria.toLowerCase().includes(textoLower) || 
+            (cat.descripcion_categoria && cat.descripcion_categoria.toLowerCase().includes(textoLower))
+      );
+      setCategoriasFiltradas(filtradas);
+    }
+  }, [textoBusqueda, categorias]);
+
+  // Variables de estado Paginación
+  const [registrosPorPagina, establecerRegistrosPorPagina] = useState(5);
+  const [paginaActual, establecerPaginaActual] = useState(1);
+
+  // Función de cálculo de las páginas a mostrar
+  const categoriasPaginadas = categoriasFiltradas.slice(
+    (paginaActual -1) * registrosPorPagina,
+    paginaActual * registrosPorPagina
+  );
+
   return (
     <Container className="mt-3">
       {/* Título y botón Nueva Categoría */}
@@ -263,18 +299,7 @@ const Categorias = () => {
         </Row>
       )}
 
-      {/* Tabla en desktop */}
-      {!cargando && categorias.length > 0 && (
-        <Row>
-          <Col lg={12} className="d-none d-lg-block">
-            <TablaCategorias 
-              categorias={categorias}
-              abrirModalEdicion={abrirModalEdicion}
-              abrirModalEliminacion={abrirModalEliminacion}
-            />
-          </Col>
-        </Row>
-      )}
+      
 
       {/* Tarjetas en móvil */}
       <Col xs={12} sm={12} md={12} className="d-lg-none">
@@ -284,6 +309,49 @@ const Categorias = () => {
           abrirModalEliminacion={abrirModalEliminacion}
         />
       </Col>
+
+      {/* Cuadro de búsqueda debajo de la línea divisoria */}
+      <Row className="mb-4">
+        <Col md={6} lg={5}>
+          <CuadroBusquedas
+            textoBusqueda={textoBusqueda}
+            manejarCambioBusqueda={manejarBusqueda}
+            placeholder="Buscar por nombre o descripción..."
+          />
+        </Col>
+      </Row>
+
+      {/* Mensaje de no coincidencias solo cuando hay búsqueda y no hay resultado */}
+      {!cargando && textoBusqueda.trim() && categoriasFiltradas.length === 0 && (
+        <Row className="mb-4">
+          <Col>
+            <Alert variant="info" className="text-center">
+              <i className="bi bi-info-circle me-2"></i>
+              No se encontraron categorías que coincidan con "{textoBusqueda}"
+            </Alert>
+          </Col>
+        </Row>
+      )}
+
+      {/* Lista de categorías filtradas */}
+      {!cargando && categoriasFiltradas.length > 0 && (
+        <Row>
+          <Col xs={12} sm={12} md={12} className="d-lg-none">
+            <TarjetaCategoria
+              categorias={categoriasPaginadas}
+              abrirModalEdicion={abrirModalEdicion}
+              abrirModalEliminacion={abrirModalEliminacion}
+            />
+          </Col>
+          <Col lg={12} className="d-none d-lg-block">
+            <TablaCategorias
+              categorias={categoriasPaginadas}
+              abrirModalEdicion={abrirModalEdicion}
+              abrirModalEliminacion={abrirModalEliminacion}
+            />
+          </Col>
+        </Row>
+      )}
 
       {/* Modal de Registro */}
       <ModalRegistroCategoria
@@ -310,6 +378,18 @@ const Categorias = () => {
         eliminarCategoria={eliminarCategoria}
         categoria={categoriaAEliminar}
       />
+
+      {/* Paginación */}
+      {categoriasFiltradas.length > 0 && (
+      <Paginacion
+        registrosPorPagina={registrosPorPagina}
+        totalRegistros={categoriasFiltradas.length}
+        paginaActual={paginaActual}
+        establecerPaginaActual={establecerPaginaActual}
+        establecerRegistrosPorPagina={establecerRegistrosPorPagina}
+      />
+    )}
+
 
       {/* Notificación */}
       <NotificacionOperacion
