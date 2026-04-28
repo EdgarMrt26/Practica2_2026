@@ -49,7 +49,7 @@ const ModalEdicionCategoria = ({
               rows={3}
               name="descripcion_categoria"
               value={categoriaEditar.descripcion_categoria || ""}
-              onChange={manejoCambioInputEdicion}     // ← CORREGIDO
+              onChange={manejoCambioInputEdicion}     
               placeholder="Ingresa la descripción"
             />
           </Form.Group>

@@ -289,7 +289,7 @@ const Categorias = () => {
 
       <hr />
 
-      {/* Spinner mientras se cargan las categorías */}
+      {/* Spin  ner mientras se cargan las categorías */}
       {cargando && (
         <Row className="text-center my-5">
           <Col>
