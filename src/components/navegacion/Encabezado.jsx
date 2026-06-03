@@ -4,10 +4,13 @@ import { Button, Container, Nav, Navbar, Offcanvas } from "react-bootstrap";
 import logo from "../../assets/logo.png";
 import { supabase } from "../../database/supabaseconfig";
 import { useAuth } from "../../context/AuthContext";
+import ChatIA from "../ia/ChatIA";
 
 const Encabezado = () => {
 
   const [mostrarMenu, setMostrarMenu] = useState(false);
+  const [mostrarChatIA, setMostrarChatIA] = useState(false);   // ← Agregado según instrucción 1
+
   const navigate = useNavigate();
   const location = useLocation(); //Para detectar la ruta actual
   const { tienePermiso, logout, usuario } = useAuth();
@@ -159,9 +162,12 @@ const Encabezado = () => {
             </Nav.Link>
             )}
 
+            <Nav.Link onClick={() => setMostrarChatIA(true)} className="text-white">
+              <i className="bi bi-robot me-2"></i>
+            </Nav.Link>
+
             <hr />
 
-            {/* Ícono cerrar sesión en barra superior */}
             {mostrarMenu ? null : (
               <Nav.Link 
                 onClick={cerrarSesion}
@@ -197,50 +203,54 @@ const Encabezado = () => {
   }
 
   return (
-    <Navbar expand="md" fixed="top" className="color-navbar shadow-lg" variant="dark">
-      <Container>
-        <Navbar.Brand 
-          onClick={() => manejarNavegacion(esCatalogo ? "/catalogo" : "/")}
-          className="text-white fw-bold d-flex align-items-center"
-          style={{ cursor: "pointer" }}
-        >
-          <img  
-            alt=""
-            src={logo}
-            width="45"
-            height="45"
-            className="d-inline-block me-2"
-          />
-          <strong>
-            <h4 className="mb-0 text-black">Discosa</h4>
-          </strong>
-        </Navbar.Brand>
+    <>
+      <Navbar expand="md" fixed="top" className="color-navbar shadow-lg" variant="dark">
+        <Container>
+          <Navbar.Brand 
+            onClick={() => manejarNavegacion(esCatalogo ? "/catalogo" : "/")}
+            className="text-white fw-bold d-flex align-items-center"
+            style={{ cursor: "pointer" }}
+          >
+            <img  
+              alt=""
+              src={logo}
+              width="45"
+              height="45"
+              className="d-inline-block me-2"
+            />
+            <strong>
+              <h4 className="mb-0 text-black">Discosa</h4>
+            </strong>
+          </Navbar.Brand>
 
-        {/* Botón del menú */}
-        {!esLogin && (
-          <Navbar.Toggle
-            aria-controls="menu-offcanvas"
-            onClick={manejarToggle}
-          />
-        )}
+          {/* Botón del menú */}
+          {!esLogin && (
+            <Navbar.Toggle
+              aria-controls="menu-offcanvas"
+              onClick={manejarToggle}
+            />
+          )}
 
-        {/* Menú lateral */}
-        <Navbar.Offcanvas
-          id="menu-offcanvas"
-          placement="end"
-          show={mostrarMenu}
-          onHide={() => setMostrarMenu(false)}
-        >
-          <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Menú Discosa</Offcanvas.Title>
-          </Offcanvas.Header>
+          {/* Menú lateral */}
+          <Navbar.Offcanvas
+            id="menu-offcanvas"
+            placement="end"
+            show={mostrarMenu}
+            onHide={() => setMostrarMenu(false)}
+          >
+            <Offcanvas.Header closeButton>
+              <Offcanvas.Title>Menú Discosa</Offcanvas.Title>
+            </Offcanvas.Header>
 
-          <Offcanvas.Body>
-            {contenidoMenu}
-          </Offcanvas.Body>
-        </Navbar.Offcanvas>
-      </Container>
-    </Navbar>
+            <Offcanvas.Body>
+              {contenidoMenu}
+            </Offcanvas.Body>
+          </Navbar.Offcanvas>
+        </Container>
+      </Navbar>
+
+      <ChatIA mostrar={mostrarChatIA} onCerrar={() => setMostrarChatIA(false)} />
+    </>
   );
 };
 
