@@ -6,7 +6,9 @@ const TablaProductos = ({
   productos,
   abrirModalEdicion,
   abrirModalEliminacion,
-  categorias,           // Opcional: si quieres mostrar el nombre de la categoría
+  categorias,           
+  copiarProducto,
+  generarQRImagen  
 }) => {
   const [loading, setLoading] = useState(true);
 
@@ -114,6 +116,26 @@ const TablaProductos = ({
                     title="Eliminar producto"
                   >
                     <i className="bi bi-trash"></i>
+                  </Button>
+                  
+                  <Button
+                    variant="outline-success"
+                    size="sm"
+                    className="m-1"
+                    onClick={() => copiarProducto(producto)}
+                    title="Copiar al portapapeles"
+                  >
+                    <i className="bi bi-clipboard"></i>
+                  </Button>
+
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="m-1"
+                    onClick={() => generarQRImagen(producto)}
+                    title="Generar código QR de la imagen"
+                  >
+                    <i className="bi bi-qr-code"></i>
                   </Button>
                 </td>
               </tr>
